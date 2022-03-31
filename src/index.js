@@ -30,8 +30,8 @@ async function startApolloServer(typeDefs, resolvers) {
 
     app.get('/', (req, res) => {
         res.status(200).json({
-            version: "1.0.0",
-            message: 'Apollo Server Express'
+            app: process.env.APP_NAME,
+            version: process.env.VERSION,
         });
     });
 
