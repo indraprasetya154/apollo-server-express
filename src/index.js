@@ -1,27 +1,17 @@
 import 'dotenv/config'
-import { ApolloServer, gql } from 'apollo-server-express';
+import { ApolloServer } from 'apollo-server-express';
 import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core';
 import cors from "cors";
 import express from 'express';
 import helmet from 'helmet';
 import http from 'http';
 import morgan from 'morgan'
+import typeDefs from './schema.js';
+import resolvers from './resolvers.js';
 
 const PORT = process.env.PORT
 const NODE_ENV = process.env.NODE_ENV
 
-const typeDefs = gql`
-    type Query {
-        hello: String
-    }
-`;
-
-const resolvers = {
-    Query: {
-        hello: () => 'Hello world!'
-    },
-}
-await startApolloServer(typeDefs, resolvers);
 async function startApolloServer(typeDefs, resolvers) {
     const app = express();
     
@@ -32,6 +22,13 @@ async function startApolloServer(typeDefs, resolvers) {
     app.use(cors());
     app.use(helmet());
 
+    app.get('/', (req, res) => {
+        res.status(200).json({
+            version: "1.0.0",
+            message: 'Apollo Express Server'
+        });
+    });
+
     const httpServer = http.createServer(app);
     const server = new ApolloServer({
       typeDefs,
@@ -41,6 +38,8 @@ async function startApolloServer(typeDefs, resolvers) {
   
     await server.start();
     server.applyMiddleware({ app });
-    await new Promise(resolve => httpServer.listen({ port: 4000 }, resolve));
-    console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+    await new Promise(resolve => httpServer.listen({ port: PORT }, resolve));
+    console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
 }
+
+await startApolloServer(typeDefs, resolvers);
