@@ -14,13 +14,19 @@ const NODE_ENV = process.env.NODE_ENV
 
 async function startApolloServer(typeDefs, resolvers) {
     const app = express();
+    const isDevelopment = NODE_ENV === 'development'
     
-    if (NODE_ENV === 'development') {
+    if (isDevelopment) {
         app.use(morgan('dev'))
     }
 
     app.use(cors());
-    app.use(helmet());
+    app.use(
+        helmet({
+          crossOriginEmbedderPolicy: !isDevelopment,
+          contentSecurityPolicy: !isDevelopment,
+        }),
+      )
 
     app.get('/', (req, res) => {
         res.status(200).json({
