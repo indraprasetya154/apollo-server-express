@@ -8,6 +8,7 @@ const typeDefs = gql`
 
     type Query {
         books: [Book]
+        book(title: String!): Book
     }
 `;
 

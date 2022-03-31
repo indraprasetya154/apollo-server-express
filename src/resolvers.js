@@ -14,6 +14,9 @@ const resolvers = {
     Query: {
         books() {
             return books;
+        },
+        book(parent, args, context, info) {
+            return books.find(books => books.title === args.title);
         }
     },
 };
